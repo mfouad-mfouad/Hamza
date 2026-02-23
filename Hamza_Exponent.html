@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exponential Mastery - Interactive Learning Lab</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600;700&family=Nunito:wght@400;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #764ba2;
+            --secondary: #667eea;
+            --accent: #f093fb;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+        }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        /* Superscript styling */
+        sup {
+            font-size: 0.6em;
+            vertical-align: super;
+            line-height: 0;
+        }
+        
+        .exp-display {
+            font-variant-numeric: tabular-nums;
+        }
+        
+        /* Welcome Modal Styles */
+        .welcome-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .welcome-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+            animation: slideUp 0.6s ease;
+            border: 5px solid white;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .welcome-emoji {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .welcome-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.5em;
+            color: white;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.3em;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .welcome-features {
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .welcome-features h3 {
+            color: white;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .welcome-features ul {
+            list-style: none;
+            color: white;
+        }
+        
+        .welcome-features li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .welcome-features li:before {
+            content: "✨";
+            position: absolute;
+            left: 0;
+        }
+        
+        .start-btn {
+            background: white;
+            color: #764ba2;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 50px;
+            font-size: 1.4em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            font-family: 'Fredoka', sans-serif;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+        
+        .start-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+        
+        .close-welcome {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2em;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        
+        .close-welcome:hover {
+            opacity: 1;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Confetti Animation */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            position: absolute;
+            animation: confetti-fall 3s linear forwards;
+            z-index: 10001;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Rest of your existing styles */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            padding: 30px 0;
+        }
+        
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+        
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            height: 30px;
+            margin: 20px auto;
+            max-width: 600px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-tab {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-tab:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .nav-tab.active {
+            background: white;
+            color: #764ba2;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .nav-tab.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Section Containers */
+        .section {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--primary);
+            font-size: 2em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Activity 1: Explorer */
+        .explorer-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            align-items: start;
+        }
+        
+        .controls-panel {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .slider-container {
+            margin: 20px 0;
+        }
+        
+        .slider-label {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 12px;
+            border-radius: 6px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        
+        .visualization-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #explorerSvg {
+            width: 100%;
+            height: 350px;
+        }
+        
+        .result-display {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 20px;
+            box-shadow: 0 5px 20px rgba(118, 75, 162, 0.4);
+        }
+        
+        .result-display .formula {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .result-display .expanded {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .pattern-box {
+            background: #fff3cd;
+            border-left: 5px solid var(--warning);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        /* Activity 2: Pattern Detective */
+        .pattern-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .pattern-card {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pattern-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: var(--secondary);
+        }
+        
+        .pattern-card.selected {
+            border-color: var(--success);
+            background: #d4edda;
+        }
+        
+        .pattern-card.correct {
+            border-color: var(--success);
+            background: #d4edda;
+            animation: correctPulse 0.5s;
+        }
+        
+        .pattern-card.wrong {
+            border-color: var(--danger);
+            background: #f8d7da;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .power-display {
+            font-size: 1.5em;
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .value-display {
+            font-size: 2em;
+            color: var(--secondary);
+            font-weight: 800;
+        }
+        
+        /* Activity 3: Challenge Mode */
+        .challenge-container {
+            text-align: center;
+        }
+        
+        .problem-display {
+            background: linear-gradient(135deg, var(--accent) 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .answer-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 600px;
+            margin: 30px auto;
+        }
+        
+        .answer-btn {
+            background: white;
+            border: 3px solid var(--secondary);
+            color: var(--primary);
+            padding: 25px;
+            border-radius: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .answer-btn:hover:not(:disabled) {
+            background: var(--secondary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .answer-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .answer-btn.correct {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+            animation: correctPulse 0.5s;
+        }
+        
+        .answer-btn.wrong {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+            animation: shake 0.5s;
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+        
+        .stat {
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+        
+        .stat.correct { color: var(--success); }
+        .stat.wrong { color: var(--danger); }
+        .stat.streak { color: var(--warning); }
+        
+        /* Activity 4: Calculator Builder */
+        .builder-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .calculator-display {
+            background: #2c3e50;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            padding: 30px;
+            border-radius: 15px;
+            font-size: 2em;
+            text-align: right;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .calculator-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(0,255,0,0.3);
+            animation: scanline 3s linear infinite;
+        }
+        
+        @keyframes scanline {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100px); }
+        }
+        
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .calc-btn {
+            background: #34495e;
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.3em;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+        
+        .calc-btn:hover {
+            background: #4a6278;
+            transform: translateY(-2px);
+        }
+        
+        .calc-btn.operator {
+            background: var(--secondary);
+        }
+        
+        .calc-btn.operator:hover {
+            background: var(--primary);
+        }
+        
+        .calc-btn.equals {
+            background: var(--success);
+            grid-column: span 2;
+        }
+        
+        .calc-btn.equals:hover {
+            background: #218838;
+        }
+        
+        .calc-btn.clear {
+            background: var(--danger);
+        }
+        
+        .calc-btn.clear:hover {
+            background: #c82333;
+        }
+        
+        .history-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .history-item {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary);
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Activity 5: Real World */
+        .scenario-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scenario-card::before {
+            content: '🌍';
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 4em;
+            opacity: 0.2;
+        }
+        
+        .scenario-text {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .interactive-slider {
+            background: rgba(255,255,255,0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        
+        .story-visual {
+            background: white;
+            color: #333;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .growth-chart {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        
+        .bar {
+            background: linear-gradient(to top, var(--secondary), var(--accent));
+            width: 60px;
+            border-radius: 5px 5px 0 0;
+            transition: height 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 10px;
+            color: white;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            color: #333;
+            font-size: 0.9em;
+        }
+        
+        /* Activity 6: Match Game */
+        .match-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .match-card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .match-card.flipped {
+            background: white;
+            color: var(--primary);
+            border: 3px solid var(--primary);
+        }
+        
+        .match-card.matched {
+            background: var(--success);
+            border-color: var(--success);
+            animation: correctPulse 0.5s;
+            pointer-events: none;
+        }
+        
+        .match-card .front, .match-card .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backface-visibility: hidden;
+        }
+        
+        .match-card .back {
+            transform: rotateY(180deg);
+        }
+        
+        /* Utility Classes */
+        .btn {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .hint-box {
+            background: #e3f2fd;
+            border-left: 5px solid var(--info);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 10px 10px 0;
+            display: none;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: gold;
+            color: #333;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .welcome-title { font-size: 1.8em; }
+            .explorer-grid { grid-template-columns: 1fr; }
+            .builder-container { grid-template-columns: 1fr; }
+            .match-grid { grid-template-columns: repeat(3, 1fr); }
+            .answer-options { grid-template-columns: 1fr; }
+            .problem-display { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Modal -->
+    <div id="welcomeModal" class="welcome-modal">
+        <div class="welcome-content">
+            <button class="close-welcome" onclick="closeWelcome()">&times;</button>
+            <div class="welcome-emoji">🚀</div>
+            <h1 class="welcome-title">Let's Learn Exponent With HAMZA!</h1>
+            <p class="welcome-subtitle">
+                Welcome to an amazing mathematical adventure! Discover the power of exponents through interactive exploration, games, and real-world applications.
+            </p>
+            
+            <div class="welcome-features">
+                <h3>🎯 What You'll Master:</h3>
+                <ul>
+                    <li>Understanding base and exponent</li>
+                    <li>Visualizing exponential growth</li>
+                    <li>Recognizing patterns and rules</li>
+                    <li>Solving real-world problems</li>
+                    <li>Speed and accuracy challenges</li>
+                </ul>
+            </div>
+            
+            <button class="start-btn" onclick="startLearning()">
+                🚀 Start Learning Now!
+            </button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <header>
+            <h1>🚀 Exponential Mastery Lab</h1>
+            <p style="font-size: 1.2em; opacity: 0.9;">Master exponential form through interactive discovery</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+            <div id="achievements"></div>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('explorer')">🔍 Explorer</button>
+            <button class="nav-tab" onclick="showSection('patterns')">🧩 Patterns</button>
+            <button class="nav-tab" onclick="showSection('challenge')">⚡ Challenge</button>
+            <button class="nav-tab" onclick="showSection('calculator')">🧮 Calculator</button>
+            <button class="nav-tab" onclick="showSection('realworld')">🌍 Real World</button>
+            <button class="nav-tab" onclick="showSection('match')">🎮 Match Game</button>
+        </nav>
+
+        <!-- Activity 1: Explorer -->
+        <section id="explorer" class="section active">
+            <h2>🔍 Exponential Explorer</h2>
+            <p>Discover how exponential form works through visualization</p>
+            
+            <div class="explorer-grid">
+                <div class="controls-panel">
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Base (b)</span>
+                            <span id="expBaseVal">2</span>
+                        </div>
+                        <input type="range" id="expBase" min="2" max="6" value="2" step="1" oninput="updateExplorer()">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Exponent (n)</span>
+                            <span id="expExpVal">3</span>
+                        </div>
+                        <input type="range" id="expExp" min="0" max="5" value="3" step="1" oninput="updateExplorer()">
+                    </div>
+                    
+                    <div class="pattern-box">
+                        <strong>💡 Pattern Notice:</strong>
+                        <p id="patternNotice">When you increase the exponent by 1, you multiply by the base!</p>
+                    </div>
+                    
+                    <button class="btn" onclick="showExplorerHint()">Need a Hint?</button>
+                    <div class="hint-box" id="explorerHint">
+                        Try setting base=2 and move exponent from 0 to 5. Watch how fast it grows!
+                    </div>
+                </div>
+                
+                <div class="visualization-container">
+                    <svg id="explorerSvg" viewBox="0 0 500 350"></svg>
+                    <div class="result-display">
+                        <div class="formula exp-display" id="expFormula">2<sup>3</sup> = 8</div>
+                        <div class="expanded" id="expExpanded">2 × 2 × 2 = 8</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Activity 2: Pattern Detective -->
+        <section id="patterns" class="section">
+            <h2>🧩 Pattern Detective</h2>
+            <p>Find the pattern and predict the next value!</p>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <h3>Complete the pattern:</h3>
+                <div class="pattern-grid" id="patternGrid">
+                    <!-- Generated by JS -->
+                </div>
+                <div id="patternQuestion" style="font-size: 1.5em; margin: 20px 0; color: var(--primary);"></div>
+                <div id="patternOptions" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;"></div>
+            </div>
+            
+            <div class="success-message" id="patternSuccess">
+                🎉 Excellent! You found the pattern! Exponents grow by multiplying, not adding!
+            </div>
+            
+            <button class="btn" onclick="generateNewPattern()">New Pattern</button>
+        </section>
+
+        <!-- Activity 3: Challenge Mode -->
+        <section id="challenge" class="section">
+            <h2>⚡ Speed Challenge</h2>
+            <p>Test your exponential knowledge against the clock!</p>
+            
+            <div class="challenge-container">
+                <div class="stats-bar">
+                    <div class="stat correct">✓ Correct: <span id="correctCount">0</span></div>
+                    <div class="stat wrong">✗ Wrong: <span id="wrongCount">0</span></div>
+                    <div class="stat streak">🔥 Streak: <span id="streakCount">0</span></div>
+                </div>
+                
+                <div class="problem-display exp-display" id="challengeProblem">
+                    2<sup>3</sup> = ?
+                </div>
+                
+                <div class="answer-options" id="challengeOptions">
+                    <!-- Generated by JS -->
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="btn" onclick="startChallenge()">Start New Challenge</button>
+                    <button class="btn" onclick="setDifficulty('easy')">Easy</button>
+                    <button class="btn" onclick="setDifficulty('medium')">Medium</button>
+                    <button class="btn" onclick="setDifficulty('hard')">Hard</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Activity 4: Calculator Builder -->
+        <section id="calculator" class="section">
+            <h2>🧮 Exponential Calculator</h2>
+            <p>Build and solve exponential expressions step by step</p>
+            
+            <div class="builder-container">
+                <div>
+                    <div class="calculator-display">
+                        <div style="font-size: 0.5em; opacity: 0.7;" id="calcExpression"></div>
+                        <div class="exp-display" id="calcResult">0</div>
+                    </div>
+                    
+                    <div class="calc-buttons">
+                        <button class="calc-btn" onclick="calcInput('7')">7</button>
+                        <button class="calc-btn" onclick="calcInput('8')">8</button>
+                        <button class="calc-btn" onclick="calcInput('9')">9</button>
+                        <button class="calc-btn" onclick="calcInput('4')">4</button>
+                        <button class="calc-btn" onclick="calcInput('5')">5</button>
+                        <button class="calc-btn" onclick="calcInput('6')">6</button>
+                        <button class="calc-btn" onclick="calcInput('1')">1</button>
+                        <button class="calc-btn" onclick="calcInput('2')">2</button>
+                        <button class="calc-btn" onclick="calcInput('3')">3</button>
+                        <button class="calc-btn" onclick="calcInput('0')">0</button>
+                        <button class="calc-btn operator" onclick="calcPower()">x<sup>y</sup></button>
+                        <button class="calc-btn clear" onclick="calcClear()">C</button>
+                        <button class="calc-btn equals" onclick="calcEquals()">=</button>
+                    </div>
+                </div>
+                
+                <div class="history-panel">
+                    <h3>Calculation History</h3>
+                    <div id="calcHistory"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Activity 5: Real World -->
+        <section id="realworld" class="section">
+            <h2>🌍 Real World Exponents</h2>
+            <p>See how exponents appear in real life!</p>
+            
+            <div class="scenario-card">
+                <h3>📧 The Viral Email</h3>
+                <div class="scenario-text">
+                    You send an email to 3 friends. Each friend forwards it to 3 more people the next day. 
+                    This continues for several days. How many people receive the email?
+                </div>
+                
+                <div class="interactive-slider">
+                    <label>Days passed: <span id="emailDays">1</span></label>
+                    <input type="range" min="1" max="6" value="1" oninput="updateEmailScenario(this.value)">
+                </div>
+                
+                <div class="story-visual">
+                    <div class="exp-display" style="font-size: 2em; margin-bottom: 10px;">3<sup id="emailExp">1</sup> = <span id="emailResult">3</span> people</div>
+                    <div class="growth-chart" id="emailChart">
+                        <!-- Bars generated by JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="scenario-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <h3>🧬 Bacteria Growth</h3>
+                <div class="scenario-text">
+                    A bacteria doubles every hour. If you start with 1 bacteria, how many after several hours?
+                </div>
+                
+                <div class="interactive-slider">
+                    <label>Hours passed: <span id="bacteriaHours">1</span></label>
+                    <input type="range" min="1" max="10" value="1" oninput="updateBacteriaScenario(this.value)">
+                </div>
+                
+                <div class="story-visual">
+                    <div class="exp-display" style="font-size: 2em; margin-bottom: 10px;">2<sup id="bacteriaExp">1</sup> = <span id="bacteriaResult">2</span> bacteria</div>
+                    <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; margin-top: 10px;">
+                        That's <span id="bacteriaMass">very tiny</span>!
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Activity 6: Match Game -->
+        <section id="match" class="section">
+            <h2>🎮 Memory Match</h2>
+            <p>Match exponential forms with their values!</p>
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div class="stats-bar" style="justify-content: center;">
+                    <div class="stat">Moves: <span id="matchMoves">0</span></div>
+                    <div class="stat">Pairs: <span id="matchPairs">0</span>/8</div>
+                    <div class="stat">Time: <span id="matchTime">0:00</span></div>
+                </div>
+                <button class="btn" onclick="initMatchGame()">New Game</button>
+            </div>
+            
+            <div class="match-grid" id="matchGrid">
+                <!-- Generated by JS -->
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Global State
+        let progress = 0;
+        let achievements = [];
+        let challengeStats = { correct: 0, wrong: 0, streak: 0 };
+        let difficulty = 'easy';
+        let calcState = { base: null, exponent: null, stage: 'base' };
+        let matchGameState = {
+            cards: [],
+            flipped: [],
+            matched: 0,
+            moves: 0,
+            timer: null,
+            seconds: 0
+        };
+
+        // Helper function to create superscript HTML
+        function formatExp(base, exp) {
+            return `${base}<sup>${exp}</sup>`;
+        }
+
+        // Welcome Modal Functions
+        function closeWelcome() {
+            document.getElementById('welcomeModal').classList.add('hidden');
+        }
+
+        function startLearning() {
+            createConfetti();
+            setTimeout(() => {
+                document.getElementById('welcomeModal').classList.add('hidden');
+            }, 1000);
+        }
+
+        function createConfetti() {
+            const colors = ['#f093fb', '#f5576c', '#667eea', '#764ba2', '#ffd700', '#00ff00'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 50);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateExplorer();
+            generateNewPattern();
+            startChallenge();
+            initMatchGame();
+        });
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+            
+            updateProgress(10);
+        }
+
+        function updateProgress(amount) {
+            progress = Math.min(100, progress + amount);
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressFill').textContent = progress + '%';
+            
+            if (progress >= 25 && !achievements.includes('beginner')) {
+                achievements.push('beginner');
+                showAchievement('Beginner Explorer');
+            }
+            if (progress >= 50 && !achievements.includes('intermediate')) {
+                achievements.push('intermediate');
+                showAchievement('Pattern Master');
+            }
+            if (progress >= 75 && !achievements.includes('advanced')) {
+                achievements.push('advanced');
+                showAchievement('Exponential Expert');
+            }
+        }
+
+        function showAchievement(title) {
+            const badge = document.createElement('span');
+            badge.className = 'badge';
+            badge.textContent = '🏆 ' + title;
+            document.getElementById('achievements').appendChild(badge);
+        }
+
+        // Activity 1: Explorer
+        function updateExplorer() {
+            const base = parseInt(document.getElementById('expBase').value);
+            const exp = parseInt(document.getElementById('expExp').value);
+            
+            document.getElementById('expBaseVal').textContent = base;
+            document.getElementById('expExpVal').textContent = exp;
+            
+            const value = Math.pow(base, exp);
+            
+            // Update formula display with superscript
+            document.getElementById('expFormula').innerHTML = 
+                `${base}<sup>${exp}</sup> = ${value}`;
+            
+            // Update expanded form
+            let expanded = '';
+            if (exp === 0) expanded = 'Any number⁰ = 1 (special rule)';
+            else if (exp === 1) expanded = `${base} = ${value}`;
+            else expanded = Array(exp).fill(base).join(' × ') + ' = ' + value;
+            
+            document.getElementById('expExpanded').textContent = expanded;
+            
+            // Update pattern notice with superscript
+            if (exp > 0) {
+                const prevValue = Math.pow(base, exp - 1);
+                document.getElementById('patternNotice').innerHTML = 
+                    `${base}<sup>${exp-1}</sup> = ${prevValue}, and ${prevValue} × ${base} = ${value}!`;
+            }
+            
+            drawExplorerVisualization(base, exp, value);
+        }
+
+        function drawExplorerVisualization(base, exp, value) {
+            const svg = document.getElementById('explorerSvg');
+            svg.innerHTML = '';
+            
+            const centerX = 250;
+            const centerY = 175;
+            
+            if (exp === 0) {
+                // Special case for 0
+                const text = createSVGText(centerX, centerY, '1', '80', '#764ba2');
+                svg.appendChild(text);
+                
+                const label = createSVGText(centerX, centerY + 60, 
+                    'Special Rule: Anything⁰ = 1', '18', '#666');
+                svg.appendChild(label);
+                
+            } else if (exp === 1) {
+                // Draw base units in a row
+                const size = Math.min(50, 300 / base);
+                const startX = centerX - (base * size) / 2;
+                
+                for (let i = 0; i < base; i++) {
+                    const rect = createSVGRect(startX + i * size, centerY - size/2, 
+                        size - 5, size - 5, '#667eea');
+                    svg.appendChild(rect);
+                    
+                    const num = createSVGText(startX + i * size + size/2, 
+                        centerY + 5, (i + 1).toString(), '20', 'white');
+                    svg.appendChild(num);
+                }
+                
+            } else if (exp === 2) {
+                // Draw square grid
+                const size = Math.min(40, 200 / base);
+                const startX = centerX - (base * size) / 2;
+                const startY = centerY - (base * size) / 2;
+                
+                for (let row = 0; row < base; row++) {
+                    for (let col = 0; col < base; col++) {
+                        const rect = createSVGRect(
+                            startX + col * size,
+                            startY + row * size,
+                            size - 2, size - 2,
+                            `hsl(${120 + (row * base + col) * 10}, 70%, 60%)`
+                        );
+                        svg.appendChild(rect);
+                    }
+                }
+                
+                // Dimension labels with superscript
+                svg.appendChild(createSVGText(centerX, startY - 20, 
+                    `${base} × ${base} = ${base}² squares`, '18', '#28a745'));
+                
+            } else if (exp === 3) {
+                // Draw 3D cube effect
+                const size = Math.min(30, 150 / base);
+                const offset = size * 0.4;
+                
+                // Draw back to front
+                for (let z = base - 1; z >= 0; z--) {
+                    for (let y = 0; y < base; y++) {
+                        for (let x = 0; x < base; x++) {
+                            const px = centerX - (base * size) / 2 + x * size + z * offset;
+                            const py = centerY - (base * size) / 2 + y * size - z * offset;
+                            
+                            // Calculate color based on depth
+                            const brightness = 70 - (z * 10);
+                            const rect = createSVGRect(px, py, size - 1, size - 1,
+                                `hsl(0, 70%, ${brightness}%)`);
+                            rect.setAttribute('stroke', '#c0392b');
+                            rect.setAttribute('stroke-width', '1');
+                            svg.appendChild(rect);
+                        }
+                    }
+                }
+                
+                // Label with superscript
+                const labelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                labelText.setAttribute('x', centerX);
+                labelText.setAttribute('y', 320);
+                labelText.setAttribute('text-anchor', 'middle');
+                labelText.setAttribute('font-size', '18');
+                labelText.setAttribute('fill', '#e74c3c');
+                labelText.innerHTML = `${base} × ${base} × ${base} = ${base}³ cube`;
+                svg.appendChild(labelText);
+                
+            } else {
+                // For higher exponents, show repeated multiplication visualization
+                const groupSize = Math.min(25, 120 / base);
+                const groupsPerRow = Math.min(base, 4);
+                
+                for (let g = 0; g < Math.min(base, 8); g++) {
+                    const gx = centerX - (Math.min(base, 4) * groupSize * base) / 2 + 
+                              (g % groupsPerRow) * (groupSize * base + 15);
+                    const gy = centerY - 50 + Math.floor(g / groupsPerRow) * (groupSize * base + 15);
+                    
+                    // Draw mini grid
+                    for (let row = 0; row < base; row++) {
+                        for (let col = 0; col < base; col++) {
+                            const rect = createSVGRect(
+                                gx + col * groupSize,
+                                gy + row * groupSize,
+                                groupSize - 1, groupSize - 1,
+                                '#9b59b6'
+                            );
+                            svg.appendChild(rect);
+                        }
+                    }
+                }
+                
+                if (base > 8) {
+                    svg.appendChild(createSVGText(centerX, centerY + 80, 
+                        `... and ${base - 8} more groups`, '16', '#666'));
+                }
+                
+                // Label with superscripts
+                const labelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                labelText.setAttribute('x', centerX);
+                labelText.setAttribute('y', 40);
+                labelText.setAttribute('text-anchor', 'middle');
+                labelText.setAttribute('font-size', '18');
+                labelText.setAttribute('fill', '#9b59b6');
+                labelText.innerHTML = `${base} groups of ${base}<sup>${exp-1}</sup> = ${base}<sup>${exp}</sup>`;
+                svg.appendChild(labelText);
+            }
+        }
+
+        function createSVGRect(x, y, w, h, fill) {
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', x);
+            rect.setAttribute('y', y);
+            rect.setAttribute('width', w);
+            rect.setAttribute('height', h);
+            rect.setAttribute('fill', fill);
+            rect.setAttribute('rx', 3);
+            return rect;
+        }
+
+        function createSVGText(x, y, content, size, color) {
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', x);
+            text.setAttribute('y', y);
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('dominant-baseline', 'middle');
+            text.setAttribute('font-size', size);
+            text.setAttribute('fill', color);
+            text.setAttribute('font-weight', 'bold');
+            text.textContent = content;
+            return text;
+        }
+
+        function showExplorerHint() {
+            document.getElementById('explorerHint').style.display = 'block';
+        }
+
+        // Activity 2: Pattern Detective
+        function generateNewPattern() {
+            const base = Math.floor(Math.random() * 4) + 2; // 2-5
+            const startExp = Math.floor(Math.random() * 3); // 0-2
+            const missingIndex = Math.floor(Math.random() * 4) + 2; // Which one to hide (2-5)
+            
+            const grid = document.getElementById('patternGrid');
+            grid.innerHTML = '';
+            
+            const values = [];
+            for (let i = 0; i < 6; i++) {
+                values.push({
+                    exp: startExp + i,
+                    val: Math.pow(base, startExp + i)
+                });
+            }
+            
+            values.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'pattern-card';
+                
+                if (index === missingIndex) {
+                    card.innerHTML = `
+                        <div class="power-display exp-display">${base}<sup>${item.exp}</sup> = ?</div>
+                        <div style="font-size: 3em;">?</div>
+                    `;
+                    card.dataset.answer = item.val;
+                    card.dataset.isQuestion = 'true';
+                } else {
+                    card.innerHTML = `
+                        <div class="power-display exp-display">${base}<sup>${item.exp}</sup></div>
+                        <div class="value-display">${item.val}</div>
+                    `;
+                }
+                
+                grid.appendChild(card);
+            });
+            
+            // Create options
+            const options = [values[missingIndex].val];
+            while (options.length < 4) {
+                const wrong = Math.pow(base, startExp + missingIndex + Math.floor(Math.random() * 3) - 1) + 
+                             Math.floor(Math.random() * 10) - 5;
+                if (!options.includes(wrong) && wrong > 0) options.push(wrong);
+            }
+            
+            options.sort(() => Math.random() - 0.5);
+            
+            const optionsDiv = document.getElementById('patternOptions');
+            optionsDiv.innerHTML = '';
+            
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.textContent = opt;
+                btn.onclick = () => checkPatternAnswer(btn, opt, values[missingIndex].val);
+                optionsDiv.appendChild(btn);
+            });
+            
+            document.getElementById('patternSuccess').style.display = 'none';
+        }
+
+        function checkPatternAnswer(btn, selected, correct) {
+            if (selected === correct) {
+                btn.style.background = 'var(--success)';
+                document.querySelector('[data-isQuestion="true"]').classList.add('correct');
+                document.getElementById('patternSuccess').style.display = 'block';
+                updateProgress(15);
+            } else {
+                btn.classList.add('wrong');
+                setTimeout(() => btn.classList.remove('wrong'), 500);
+            }
+        }
+
+        // Activity 3: Challenge Mode
+        function setDifficulty(level) {
+            difficulty = level;
+            startChallenge();
+        }
+
+        function startChallenge() {
+            challengeStats = { correct: 0, wrong: 0, streak: 0 };
+            updateChallengeStats();
+            generateChallengeProblem();
+        }
+
+        function generateChallengeProblem() {
+            let base, exp;
+            
+            switch(difficulty) {
+                case 'easy':
+                    base = Math.floor(Math.random() * 4) + 2; // 2-5
+                    exp = Math.floor(Math.random() * 4); // 0-3
+                    break;
+                case 'medium':
+                    base = Math.floor(Math.random() * 5) + 2; // 2-6
+                    exp = Math.floor(Math.random() * 5); // 0-4
+                    break;
+                case 'hard':
+                    base = Math.floor(Math.random() * 7) + 2; // 2-8
+                    exp = Math.floor(Math.random() * 6) + 2; // 2-7
+                    break;
+            }
+            
+            const correct = Math.pow(base, exp);
+            
+            // Display with superscript
+            document.getElementById('challengeProblem').innerHTML = 
+                `${base}<sup>${exp}</sup> = ?`;
+            
+            // Generate options
+            const options = [correct];
+            const distractors = [
+                base * exp,
+                base + exp,
+                base * base,
+                correct + Math.floor(Math.random() * 10) - 5,
+                correct * 2,
+                Math.pow(base, exp - 1)
+            ];
+            
+            for (let d of distractors) {
+                if (!options.includes(d) && d >= 0 && options.length < 4) {
+                    options.push(d);
+                }
+            }
+            
+            options.sort(() => Math.random() - 0.5);
+            
+            const container = document.getElementById('challengeOptions');
+            container.innerHTML = '';
+            
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = opt;
+                btn.onclick = () => checkChallengeAnswer(btn, opt, correct);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkChallengeAnswer(btn, selected, correct) {
+            const buttons = document.querySelectorAll('.answer-btn');
+            buttons.forEach(b => b.disabled = true);
+            
+            if (selected === correct) {
+                btn.classList.add('correct');
+                challengeStats.correct++;
+                challengeStats.streak++;
+                updateProgress(5);
+                
+                if (challengeStats.streak >= 5) {
+                    showAchievement('Speed Demon!');
+                }
+                
+                setTimeout(generateChallengeProblem, 1000);
+            } else {
+                btn.classList.add('wrong');
+                challengeStats.wrong++;
+                challengeStats.streak = 0;
+                
+                // Highlight correct answer
+                buttons.forEach(b => {
+                    if (parseInt(b.textContent) === correct) {
+                        b.classList.add('correct');
+                    }
+                });
+                
+                setTimeout(generateChallengeProblem, 2000);
+            }
+            
+            updateChallengeStats();
+        }
+
+        function updateChallengeStats() {
+            document.getElementById('correctCount').textContent = challengeStats.correct;
+            document.getElementById('wrongCount').textContent = challengeStats.wrong;
+            document.getElementById('streakCount').textContent = challengeStats.streak;
+        }
+
+        // Activity 4: Calculator
+        function calcInput(num) {
+            const display = document.getElementById('calcResult');
+            const expr = document.getElementById('calcExpression');
+            
+            if (calcState.stage === 'base') {
+                calcState.base = calcState.base === null ? num : calcState.base + num;
+                display.textContent = calcState.base;
+            } else {
+                calcState.exponent = calcState.exponent === null ? num : calcState.exponent + num;
+                display.innerHTML = calcState.exponent;
+                expr.innerHTML = calcState.base + '<sup>' + calcState.exponent + '</sup>';
+            }
+        }
+
+        function calcPower() {
+            if (calcState.base !== null) {
+                calcState.stage = 'exponent';
+                document.getElementById('calcExpression').innerHTML = calcState.base + '<sup>...</sup>';
+                document.getElementById('calcResult').textContent = '0';
+            }
+        }
+
+        function calcEquals() {
+            if (calcState.base !== null && calcState.exponent !== null) {
+                const base = parseInt(calcState.base);
+                const exp = parseInt(calcState.exponent);
+                const result = Math.pow(base, exp);
+                
+                document.getElementById('calcResult').textContent = result;
+                
+                // Add to history with superscript
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item exp-display';
+                historyItem.innerHTML = `
+                    <strong>${base}<sup>${exp}</sup> = ${result}</strong><br>
+                    <small>${Array(exp).fill(base).join(' × ')}</small>
+                `;
+                document.getElementById('calcHistory').prepend(historyItem);
+                
+                calcState = { base: null, exponent: null, stage: 'base' };
+                updateProgress(3);
+            }
+        }
+
+        function calcClear() {
+            calcState = { base: null, exponent: null, stage: 'base' };
+            document.getElementById('calcResult').textContent = '0';
+            document.getElementById('calcExpression').textContent = '';
+        }
+
+        // Activity 5: Real World
+        function updateEmailScenario(days) {
+            document.getElementById('emailDays').textContent = days;
+            document.getElementById('emailExp').textContent = days;
+            
+            const result = Math.pow(3, parseInt(days));
+            document.getElementById('emailResult').textContent = result.toLocaleString();
+            
+            // Update chart
+            const chart = document.getElementById('emailChart');
+            chart.innerHTML = '';
+            
+            for (let i = 1; i <= parseInt(days); i++) {
+                const val = Math.pow(3, i);
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = (val / result * 150) + 'px';
+                bar.innerHTML = `
+                    ${val.toLocaleString()}
+                    <div class="bar-label">Day ${i}</div>
+                `;
+                chart.appendChild(bar);
+            }
+        }
+
+        function updateBacteriaScenario(hours) {
+            document.getElementById('bacteriaHours').textContent = hours;
+            document.getElementById('bacteriaExp').textContent = hours;
+            
+            const result = Math.pow(2, parseInt(hours));
+            document.getElementById('bacteriaResult').textContent = result.toLocaleString();
+            
+            // Fun comparison
+            let comparison = '';
+            if (result < 100) comparison = 'invisible to the naked eye';
+            else if (result < 1000) comparison = 'about the size of a grain of sand';
+            else if (result < 10000) comparison = 'about the weight of a paperclip';
+            else if (result < 100000) comparison = 'about the weight of a smartphone';
+            else if (result < 1000000) comparison = 'about the weight of a liter of water';
+            else comparison = 'heavier than a car!';
+            
+            document.getElementById('bacteriaMass').textContent = comparison;
+        }
+
+        // Activity 6: Match Game
+        function initMatchGame() {
+            matchGameState = {
+                cards: [],
+                flipped: [],
+                matched: 0,
+                moves: 0,
+                seconds: 0
+            };
+            
+            document.getElementById('matchMoves').textContent = '0';
+            document.getElementById('matchPairs').textContent = '0/8';
+            document.getElementById('matchTime').textContent = '0:00';
+            
+            if (matchGameState.timer) clearInterval(matchGameState.timer);
+            matchGameState.timer = setInterval(updateMatchTimer, 1000);
+            
+            // Create pairs
+            const pairs = [];
+            for (let i = 0; i < 8; i++) {
+                const base = Math.floor(Math.random() * 5) + 2;
+                const exp = Math.floor(Math.random() * 4);
+                const value = Math.pow(base, exp);
+                pairs.push(
+                    { id: i, content: `${base}<sup>${exp}</sup>`, match: value, type: 'exp' },
+                    { id: i, content: value.toString(), match: `${base}<sup>${exp}</sup>`, type: 'val' }
+                );
+            }
+            
+            // Shuffle
+            matchGameState.cards = pairs.sort(() => Math.random() - 0.5);
+            
+            // Render
+            const grid = document.getElementById('matchGrid');
+            grid.innerHTML = '';
+            
+            matchGameState.cards.forEach((card, index) => {
+                const div = document.createElement('div');
+                div.className = 'match-card exp-display';
+                div.dataset.index = index;
+                div.dataset.id = card.id;
+                div.innerHTML = '?';
+                div.onclick = () => flipCard(index);
+                grid.appendChild(div);
+            });
+        }
+
+        function updateMatchTimer() {
+            matchGameState.seconds++;
+            const mins = Math.floor(matchGameState.seconds / 60);
+            const secs = matchGameState.seconds % 60;
+            document.getElementById('matchTime').textContent = 
+                `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function flipCard(index) {
+            const card = matchGameState.cards[index];
+            const element = document.querySelector(`[data-index="${index}"]`);
+            
+            if (element.classList.contains('flipped') || 
+                element.classList.contains('matched') ||
+                matchGameState.flipped.length >= 2) return;
+            
+            element.classList.add('flipped');
+            element.innerHTML = card.content;
+            matchGameState.flipped.push({ index, id: card.id, element });
+            
+            if (matchGameState.flipped.length === 2) {
+                matchGameState.moves++;
+                document.getElementById('matchMoves').textContent = matchGameState.moves;
+                
+                setTimeout(checkMatch, 800);
+            }
+        }
+
+        function checkMatch() {
+            const [first, second] = matchGameState.flipped;
+            
+            if (first.id === second.id) {
+                first.element.classList.add('matched');
+                second.element.classList.add('matched');
+                matchGameState.matched++;
+                document.getElementById('matchPairs').textContent = 
+                    `${matchGameState.matched}/8`;
+                
+                if (matchGameState.matched === 8) {
+                    clearInterval(matchGameState.timer);
+                    setTimeout(() => {
+                        alert(`🎉 Congratulations! You won in ${matchGameState.moves} moves!`);
+                        updateProgress(20);
+                    }, 500);
+                }
+            } else {
+                first.element.classList.remove('flipped');
+                second.element.classList.remove('flipped');
+                first.element.innerHTML = '?';
+                second.element.innerHTML = '?';
+            }
+            
+            matchGameState.flipped = [];
+        }
+    </script>
+</body>
+</html>
