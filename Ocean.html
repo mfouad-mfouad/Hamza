@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌊 Earth's Ocean Features With HAYA - Interactive Explorer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600;700&family=Nunito:wght@400;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .ocean-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                linear-gradient(180deg, #4fc3f7 0%, #0288d1 50%, #01579b 100%);
+            z-index: -1;
+            animation: oceanWave 8s ease-in-out infinite;
+        }
+
+        @keyframes oceanWave {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.02); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(255,255,255,0.5);
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 3.5rem;
+            color: #01579b;
+            text-shadow: 3px 3px 0px #4fc3f7;
+            margin-bottom: 10px;
+            animation: titleBounce 2s ease infinite;
+        }
+
+        @keyframes titleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #0277bd;
+            font-weight: 600;
+        }
+
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .mode-btn:hover::before {
+            left: 100%;
+        }
+
+        .mode-btn.explore { background: linear-gradient(135deg, #4fc3f7, #0288d1); color: white; }
+        .mode-btn.label { background: linear-gradient(135deg, #81c784, #4caf50); color: white; }
+        .mode-btn.match { background: linear-gradient(135deg, #ffb74d, #ff9800); color: white; }
+        .mode-btn.quiz { background: linear-gradient(135deg, #e57373, #f44336); color: white; }
+
+        .mode-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .mode-btn.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.5), 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .game-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(255,255,255,0.5);
+            min-height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Explore Mode with Image Hotspots */
+        .explore-mode {
+            display: none;
+        }
+
+        .explore-mode.active {
+            display: block;
+        }
+
+        .ocean-container {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .ocean-image {
+            width: 100%;
+            display: block;
+            border-radius: 20px;
+        }
+
+        .hotspot {
+            position: absolute;
+            background: rgba(255, 87, 34, 0.2); /* 80% transparent - only 20% visible */
+            border: 3px solid rgba(255, 87, 34, 0.8);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hotspot::before {
+            content: '';
+            position: absolute;
+            width: 40%;
+            height: 40%;
+            background: rgba(255, 87, 34, 0.6);
+            border-radius: 50%;
+        }
+
+        .hotspot:hover {
+            transform: scale(1.3);
+            background: rgba(255, 87, 34, 0.5); /* More visible on hover - 50% opacity */
+            border-color: rgba(255, 87, 34, 1);
+            box-shadow: 0 0 20px rgba(255, 87, 34, 0.8);
+            z-index: 20;
+        }
+
+        .hotspot:hover::before {
+            background: rgba(255, 87, 34, 0.9);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255,87,34,0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(255,87,34,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,87,34,0); }
+        }
+
+        .hotspot-label {
+            position: absolute;
+            background: rgba(255,255,255,0.95);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #01579b;
+            white-space: nowrap;
+            opacity: 0;
+            transition: all 0.3s;
+            pointer-events: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 15;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .hotspot:hover .hotspot-label {
+            opacity: 1;
+        }
+
+        /* Label Mode Styles */
+        .label-mode {
+            display: none;
+        }
+
+        .label-mode.active {
+            display: block;
+        }
+
+        .label-game {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .diagram-container {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .diagram-container img {
+            width: 100%;
+            display: block;
+        }
+
+        .drop-zone {
+            position: absolute;
+            border: 3px dashed rgba(255,87,34,0.6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: rgba(255,87,34,0.8);
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.3);
+            font-weight: 700;
+        }
+
+        .drop-zone.drag-over {
+            background: rgba(76, 175, 80, 0.4);
+            border-color: #4caf50;
+            transform: scale(1.05);
+        }
+
+        .drop-zone.correct {
+            background: rgba(76, 175, 80, 0.7);
+            border-color: #4caf50;
+            border-style: solid;
+            color: white;
+            font-weight: 700;
+        }
+
+        .drop-zone.wrong {
+            background: rgba(244, 67, 54, 0.5);
+            border-color: #f44336;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .labels-container {
+            background: #f5f5f5;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .labels-container h3 {
+            font-family: 'Fredoka', sans-serif;
+            color: #01579b;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .draggable-label {
+            background: linear-gradient(135deg, #4fc3f7, #0288d1);
+            color: white;
+            padding: 12px 20px;
+            margin: 10px 0;
+            border-radius: 25px;
+            cursor: grab;
+            text-align: center;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .draggable-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .draggable-label.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+
+        .draggable-label.placed {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Match Mode Styles */
+        .match-mode {
+            display: none;
+        }
+
+        .match-mode.active {
+            display: block;
+        }
+
+        .match-game {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .match-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .match-item {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .match-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .match-item.selected {
+            border-color: #4fc3f7;
+            background: #e3f2fd;
+            transform: scale(1.05);
+        }
+
+        .match-item.matched {
+            background: #c8e6c9;
+            border-color: #4caf50;
+            pointer-events: none;
+            animation: matchPulse 0.5s;
+        }
+
+        .match-item.wrong {
+            background: #ffcdd2;
+            border-color: #f44336;
+            animation: shake 0.5s;
+        }
+
+        @keyframes matchPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .match-item.term {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.3rem;
+            color: #01579b;
+        }
+
+        .match-item.definition {
+            font-size: 1rem;
+            color: #424242;
+            line-height: 1.4;
+        }
+
+        /* Quiz Mode Styles */
+        .quiz-mode {
+            display: none;
+        }
+
+        .quiz-mode.active {
+            display: block;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .quiz-progress {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .progress-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .progress-dot.active {
+            background: #4fc3f7;
+            transform: scale(1.3);
+        }
+
+        .progress-dot.correct {
+            background: #4caf50;
+        }
+
+        .progress-dot.wrong {
+            background: #f44336;
+        }
+
+        .question-card {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 40px;
+            border-radius: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .question-card h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            color: #01579b;
+            margin-bottom: 20px;
+        }
+
+        .quiz-image {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 100px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .quiz-option {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .quiz-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-color: #4fc3f7;
+        }
+
+        .quiz-option.correct {
+            background: #c8e6c9;
+            border-color: #4caf50;
+            animation: correctPulse 0.5s;
+        }
+
+        .quiz-option.wrong {
+            background: #ffcdd2;
+            border-color: #f44336;
+            animation: shake 0.5s;
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .score-display {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            color: #01579b;
+            margin-top: 20px;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #4fc3f7, #0288d1);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        /* Info Panel */
+        .info-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+            z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 4px solid #4fc3f7;
+        }
+
+        .info-panel.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .info-panel h3 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            color: #01579b;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-panel p {
+            color: #424242;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #f44336;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+
+        .close-btn:hover {
+            transform: rotate(90deg);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .label-game {
+                grid-template-columns: 1fr;
+            }
+
+            .match-game {
+                grid-template-columns: 1fr;
+            }
+
+            .quiz-options {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .hotspot {
+                width: 25px;
+                height: 25px;
+            }
+        }
+
+        /* Celebration Animation */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .instruction-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #01579b;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <div class="ocean-bg"></div>
+
+    <div class="container">
+        <header>
+            <h1>🌊 Earth's Ocean Features With HAYA 🌊</h1>
+            <p class="subtitle">Interactive Learning Adventure For GRADE 4</p>
+
+            <div class="mode-selector">
+                <button class="mode-btn explore active" onclick="setMode('explore')">🔍 Explore</button>
+                <button class="mode-btn label" onclick="setMode('label')">🏷️ Label It</button>
+                <button class="mode-btn match" onclick="setMode('match')">🎯 Match Up</button>
+                <button class="mode-btn quiz" onclick="setMode('quiz')">🎓 Quiz</button>
+            </div>
+        </header>
+
+        <div class="game-container">
+            <!-- Explore Mode with Image Hotspots -->
+            <div class="explore-mode active" id="exploreMode">
+                <div class="ocean-container" id="oceanContainer">
+                    <!-- Using the actual ocean floor diagram image -->
+                    <img src="ocean-floor.jpg" alt="Ocean Floor Diagram" class="ocean-image" id="oceanImage">
+
+                    <!-- Hotspots positioned over each shaded region -->
+                    <!-- Left Continental Shelf -->
+                    <div class="hotspot" style="top: 35%; left: 8%; width: 60px; height: 40px;" data-feature="continental-shelf-left">
+                        <div class="hotspot-label">Continental Shelf</div>
+                    </div>
+
+                    <!-- Left Continental Slope -->
+                    <div class="hotspot" style="top: 45%; left: 12%; width: 50px; height: 60px;" data-feature="continental-slope-left">
+                        <div class="hotspot-label">Continental Slope</div>
+                    </div>
+
+                    <!-- Left Continental Rise -->
+                    <div class="hotspot" style="top: 60%; left: 15%; width: 40px; height: 50px;" data-feature="continental-rise-left">
+                        <div class="hotspot-label">Continental Rise</div>
+                    </div>
+
+                    <!-- Seamount -->
+                    <div class="hotspot" style="top: 45%; left: 28%; width: 50px; height: 40px;" data-feature="seamount">
+                        <div class="hotspot-label">Seamount</div>
+                    </div>
+
+                    <!-- Abyssal Plain Left -->
+                    <div class="hotspot" style="top: 65%; left: 25%; width: 80px; height: 40px;" data-feature="abyssal-plain">
+                        <div class="hotspot-label">Abyssal Plain</div>
+                    </div>
+
+                    <!-- Volcanic Island -->
+                    <div class="hotspot" style="top: 15%; left: 35%; width: 50px; height: 50px;" data-feature="volcanic-island">
+                        <div class="hotspot-label">Volcanic Island</div>
+                    </div>
+
+                    <!-- Mid-Ocean Ridge -->
+                    <div class="hotspot" style="top: 60%; left: 42%; width: 100px; height: 50px;" data-feature="mid-ocean-ridge">
+                        <div class="hotspot-label">Mid-Ocean Ridge</div>
+                    </div>
+
+                    <!-- Rift Valley -->
+                    <div class="hotspot" style="top: 55%; left: 50%; width: 30px; height: 80px;" data-feature="rift-valley">
+                        <div class="hotspot-label">Rift Valley</div>
+                    </div>
+
+                    <!-- Right Continental Shelf -->
+                    <div class="hotspot" style="top: 35%; left: 88%; width: 60px; height: 40px;" data-feature="continental-shelf-right">
+                        <div class="hotspot-label">Continental Shelf</div>
+                    </div>
+
+                    <!-- Right Continental Slope -->
+                    <div class="hotspot" style="top: 45%; left: 82%; width: 50px; height: 60px;" data-feature="continental-slope-right">
+                        <div class="hotspot-label">Continental Slope</div>
+                    </div>
+
+                    <!-- Trench -->
+                    <div class="hotspot" style="top: 65%; left: 76%; width: 40px; height: 80px;" data-feature="trench">
+                        <div class="hotspot-label">Trench</div>
+                    </div>
+                </div>
+
+                <div class="instruction-text">
+                    🖱️ Click on the glowing red hotspots to learn about each ocean feature!
+                </div>
+            </div>
+
+            <!-- Label Mode -->
+            <div class="label-mode" id="labelMode">
+                <div class="label-game">
+                    <div class="diagram-container" id="labelDiagram" style="position: relative;">
+                        <img src="ocean-floor.jpg" alt="Ocean Floor Diagram" style="width: 100%; border-radius: 20px;">
+
+                        <!-- Drop zones positioned over shaded areas -->
+                        <div class="drop-zone" data-accept="continental-shelf" style="top: 35%; left: 5%; width: 12%; height: 15%;">?</div>
+                        <div class="drop-zone" data-accept="continental-slope" style="top: 45%; left: 10%; width: 10%; height: 20%;">?</div>
+                        <div class="drop-zone" data-accept="continental-rise" style="top: 60%; left: 13%; width: 8%; height: 15%;">?</div>
+                        <div class="drop-zone" data-accept="seamount" style="top: 45%; left: 26%; width: 10%; height: 12%;">?</div>
+                        <div class="drop-zone" data-accept="abyssal-plain" style="top: 65%; left: 22%; width: 18%; height: 12%;">?</div>
+                        <div class="drop-zone" data-accept="volcanic-island" style="top: 15%; left: 33%; width: 10%; height: 15%;">?</div>
+                        <div class="drop-zone" data-accept="mid-ocean-ridge" style="top: 60%; left: 40%; width: 20%; height: 15%;">?</div>
+                        <div class="drop-zone" data-accept="rift-valley" style="top: 55%; left: 49%; width: 5%; height: 25%;">?</div>
+                        <div class="drop-zone" data-accept="trench" style="top: 65%; left: 75%; width: 8%; height: 20%;">?</div>
+                    </div>
+
+                    <div class="labels-container">
+                        <h3>📝 Drag to Label</h3>
+                        <div id="labelsList">
+                            <div class="draggable-label" draggable="true" data-feature="continental-shelf">Continental Shelf</div>
+                            <div class="draggable-label" draggable="true" data-feature="continental-slope">Continental Slope</div>
+                            <div class="draggable-label" draggable="true" data-feature="continental-rise">Continental Rise</div>
+                            <div class="draggable-label" draggable="true" data-feature="abyssal-plain">Abyssal Plain</div>
+                            <div class="draggable-label" draggable="true" data-feature="mid-ocean-ridge">Mid-Ocean Ridge</div>
+                            <div class="draggable-label" draggable="true" data-feature="rift-valley">Rift Valley</div>
+                            <div class="draggable-label" draggable="true" data-feature="seamount">Seamount</div>
+                            <div class="draggable-label" draggable="true" data-feature="trench">Trench</div>
+                            <div class="draggable-label" draggable="true" data-feature="volcanic-island">Volcanic Island</div>
+                        </div>
+                        <div style="margin-top: 20px; text-align: center;">
+                            <div style="font-size: 1.2rem; font-weight: bold; color: #01579b;">
+                                Score: <span id="labelScore">0</span>/9
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Match Mode -->
+            <div class="match-mode" id="matchMode">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="font-family: 'Fredoka', sans-serif; color: #01579b; font-size: 1.5rem;">
+                        🎯 Match the terms with their definitions!
+                    </h3>
+                </div>
+                <div class="match-game" id="matchGame">
+                    <div class="match-column" id="termsColumn"></div>
+                    <div class="match-column" id="defsColumn"></div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #01579b;">
+                        Matches: <span id="matchScore">0</span>/9
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Mode -->
+            <div class="quiz-mode" id="quizMode">
+                <div class="quiz-container">
+                    <div class="quiz-progress" id="quizProgress"></div>
+
+                    <div class="question-card" id="questionCard">
+                        <h3 id="questionText">Loading question...</h3>
+                        <div class="quiz-image" id="quizImage">🌊</div>
+                        <div class="quiz-options" id="quizOptions"></div>
+                    </div>
+
+                    <div class="score-display" id="scoreDisplay" style="display: none;">
+                        🎉 Quiz Complete! 🎉<br>
+                        Your Score: <span id="finalScore">0</span>/10
+                    </div>
+
+                    <button class="restart-btn" id="restartBtn" onclick="initQuiz()" style="display: none;">
+                        🔄 Try Again
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Panel -->
+    <div class="overlay" id="overlay" onclick="closeInfo()"></div>
+    <div class="info-panel" id="infoPanel">
+        <button class="close-btn" onclick="closeInfo()">×</button>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+            <span id="speakerIcon" style="font-size: 1.5rem;">🔊</span>
+            <span style="font-size: 0.8rem; color: #666;">Reading aloud...</span>
+        </div>
+        <h3 id="infoTitle">Title</h3>
+        <p id="infoContent">Content</p>
+    </div>
+
+    <!-- Celebration Container -->
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        // Ocean Features Data
+        const oceanFeatures = {
+            'continental-shelf-left': {
+                title: '🏝️ Continental Shelf',
+                content: 'The continental shelf is the shallow ocean floor near the coast of a continent. It is a gently sloping area that extends from the shoreline into the ocean, typically rich in marine life.'
+            },
+            'continental-shelf-right': {
+                title: '🏝️ Continental Shelf',
+                content: 'The continental shelf is the shallow ocean floor near the coast of a continent. It is a gently sloping area that extends from the shoreline into the ocean, typically rich in marine life.'
+            },
+            'continental-slope-left': {
+                title: '📉 Continental Slope',
+                content: 'The continental slope is where the ocean floor drops off sharply at the edge of the continental shelf. It marks the boundary between continental and oceanic crust.'
+            },
+            'continental-slope-right': {
+                title: '📉 Continental Slope',
+                content: 'The continental slope is where the ocean floor drops off sharply at the edge of the continental shelf. It marks the boundary between continental and oceanic crust.'
+            },
+            'continental-rise-left': {
+                title: '📈 Continental Rise',
+                content: 'The continental rise is found at the base of the continental slope. It is a gently sloping area made of sediment that connects the continent to the deep ocean floor.'
+            },
+            'abyssal-plain': {
+                title: '🌊 Abyssal Plain',
+                content: 'The abyssal plain is a very flat area of the deep ocean floor. It covers more than 50% of Earth\'s surface and is found at depths between 3,000 and 6,000 meters.'
+            },
+            'mid-ocean-ridge': {
+                title: '🏔️ Mid-Ocean Ridge',
+                content: 'Mid-ocean ridges are long mountain ranges that stretch through the middle of some oceans. They form where tectonic plates are moving apart, allowing magma to rise.'
+            },
+            'rift-valley': {
+                title: '🏞️ Rift Valley',
+                content: 'A rift valley is the valley down the center of a mid-ocean ridge. It forms where the ocean floor is being pulled apart by plate tectonics.'
+            },
+            'seamount': {
+                title: '🗻 Seamount',
+                content: 'A seamount is an underwater mountain that rises from the ocean floor but does not reach the water\'s surface. They are typically formed by volcanic activity.'
+            },
+            'trench': {
+                title: '🕳️ Trench',
+                content: 'Trenches are the deepest parts of the ocean floor. They form where one tectonic plate is pushed under another. The Mariana Trench is the deepest known point on Earth.'
+            },
+            'volcanic-island': {
+                title: '🌋 Volcanic Island',
+                content: 'Volcanic islands are formed when underwater volcanoes grow tall enough to break the ocean surface. Hawaii is a famous example of volcanic islands.'
+            }
+        };
+
+        const definitions = {
+            'continental-shelf': 'The shallow ocean floor near the coast of a continent',
+            'continental-slope': 'Where the ocean floor drops off sharply at the edge of the shelf',
+            'continental-rise': 'The base of the slope made of sediment',
+            'abyssal-plain': 'A very flat area of the deep ocean floor',
+            'mid-ocean-ridge': 'Long mountain ranges through the middle of oceans',
+            'rift-valley': 'The valley down the center of a mid-ocean ridge',
+            'seamount': 'An underwater mountain that does not reach the surface',
+            'trench': 'The deepest parts of the ocean floor',
+            'volcanic-island': 'Forms when an underwater volcano breaks the surface'
+        };
+
+        // Mode Switching
+        function setMode(mode) {
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.explore-mode, .label-mode, .match-mode, .quiz-mode').forEach(m => m.classList.remove('active'));
+
+            document.querySelector(`.mode-btn.${mode}`).classList.add('active');
+            document.getElementById(`${mode}Mode`).classList.add('active');
+
+            if (mode === 'match') initMatchGame();
+            if (mode === 'quiz') initQuiz();
+        }
+
+        // Explore Mode with Hotspots
+        document.querySelectorAll('.hotspot').forEach(hotspot => {
+            hotspot.addEventListener('click', function() {
+                const feature = this.getAttribute('data-feature');
+                showInfo(feature);
+            });
+        });
+
+        function showInfo(feature) {
+            const data = oceanFeatures[feature];
+            document.getElementById('infoTitle').innerHTML = data.title;
+            document.getElementById('infoContent').textContent = data.content;
+            document.getElementById('overlay').classList.add('active');
+            document.getElementById('infoPanel').classList.add('active');
+
+            // Speak the content
+            const textToSpeak = data.title.replace(/[^a-zA-Z0-9\s]/g, '') + '. ' + data.content;
+            speakText(textToSpeak);
+        }
+
+        function closeInfo() {
+            document.getElementById('overlay').classList.remove('active');
+            document.getElementById('infoPanel').classList.remove('active');
+
+            // Stop speaking when closing
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+        }
+
+        // Label Mode - Drag and Drop
+        let draggedElement = null;
+        let labelScore = 0;
+
+        document.querySelectorAll('.draggable-label').forEach(label => {
+            label.addEventListener('dragstart', (e) => {
+                draggedElement = e.target;
+                e.target.classList.add('dragging');
+            });
+
+            label.addEventListener('dragend', (e) => {
+                e.target.classList.remove('dragging');
+            });
+        });
+
+        document.querySelectorAll('.drop-zone').forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('drag-over');
+            });
+
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+            });
+
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+
+                const feature = draggedElement.getAttribute('data-feature');
+                const accept = zone.getAttribute('data-accept');
+
+                if (feature === accept && !zone.classList.contains('correct')) {
+                    zone.classList.add('correct');
+                    zone.textContent = draggedElement.textContent;
+                    draggedElement.classList.add('placed');
+                    labelScore++;
+                    document.getElementById('labelScore').textContent = labelScore;
+
+                    if (labelScore === 9) {
+                        celebrate();
+                    }
+                } else if (feature !== accept) {
+                    zone.classList.add('wrong');
+                    setTimeout(() => zone.classList.remove('wrong'), 500);
+                }
+            });
+        });
+
+        // Match Mode
+        let selectedTerm = null;
+        let selectedDef = null;
+        let matchScore = 0;
+
+        function initMatchGame() {
+            matchScore = 0;
+            document.getElementById('matchScore').textContent = matchScore;
+
+            const termsColumn = document.getElementById('termsColumn');
+            const defsColumn = document.getElementById('defsColumn');
+            termsColumn.innerHTML = '';
+            defsColumn.innerHTML = '';
+
+            const shuffledTerms = Object.keys(definitions).sort(() => Math.random() - 0.5);
+            const shuffledDefs = Object.keys(definitions).sort(() => Math.random() - 0.5);
+
+            shuffledTerms.forEach(key => {
+                const div = document.createElement('div');
+                div.className = 'match-item term';
+                div.textContent = key.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                div.setAttribute('data-key', key);
+                div.onclick = () => selectTerm(div, key);
+                termsColumn.appendChild(div);
+            });
+
+            shuffledDefs.forEach(key => {
+                const div = document.createElement('div');
+                div.className = 'match-item definition';
+                div.textContent = definitions[key];
+                div.setAttribute('data-key', key);
+                div.onclick = () => selectDef(div, key);
+                defsColumn.appendChild(div);
+            });
+        }
+
+        function selectTerm(element, key) {
+            if (element.classList.contains('matched')) return;
+
+            document.querySelectorAll('.match-item.term').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedTerm = { element, key };
+            checkMatch();
+        }
+
+        function selectDef(element, key) {
+            if (element.classList.contains('matched')) return;
+
+            document.querySelectorAll('.match-item.definition').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedDef = { element, key };
+            checkMatch();
+        }
+
+        function checkMatch() {
+            if (selectedTerm && selectedDef) {
+                if (selectedTerm.key === selectedDef.key) {
+                    selectedTerm.element.classList.add('matched');
+                    selectedDef.element.classList.add('matched');
+                    matchScore++;
+                    document.getElementById('matchScore').textContent = matchScore;
+
+                    if (matchScore === 9) {
+                        celebrate();
+                    }
+                } else {
+                    selectedTerm.element.classList.add('wrong');
+                    selectedDef.element.classList.add('wrong');
+                    setTimeout(() => {
+                        selectedTerm.element.classList.remove('wrong');
+                        selectedDef.element.classList.remove('wrong');
+                    }, 500);
+                }
+
+                selectedTerm.element.classList.remove('selected');
+                selectedDef.element.classList.remove('selected');
+                selectedTerm = null;
+                selectedDef = null;
+            }
+        }
+
+        // Quiz Mode
+        const quizQuestions = [
+            {
+                question: 'What is the shallow ocean floor near the coast called?',
+                image: '🏝️',
+                options: ['Continental Shelf', 'Abyssal Plain', 'Mid-Ocean Ridge', 'Trench'],
+                correct: 0
+            },
+            {
+                question: 'Where does the ocean floor drop off sharply?',
+                image: '📉',
+                options: ['Continental Rise', 'Continental Slope', 'Seamount', 'Rift Valley'],
+                correct: 1
+            },
+            {
+                question: 'What is the base of the slope made of sediment?',
+                image: '📈',
+                options: ['Trench', 'Volcanic Island', 'Continental Rise', 'Abyssal Plain'],
+                correct: 2
+            },
+            {
+                question: 'What is a very flat area of the deep ocean floor?',
+                image: '🌊',
+                options: ['Mid-Ocean Ridge', 'Seamount', 'Abyssal Plain', 'Continental Shelf'],
+                correct: 2
+            },
+            {
+                question: 'What are long mountain ranges in the middle of oceans?',
+                image: '🏔️',
+                options: ['Trenches', 'Mid-Ocean Ridges', 'Volcanic Islands', 'Rift Valleys'],
+                correct: 1
+            },
+            {
+                question: 'What is the valley down the center of a mid-ocean ridge?',
+                image: '🏞️',
+                options: ['Seamount', 'Trench', 'Rift Valley', 'Continental Slope'],
+                correct: 2
+            },
+            {
+                question: 'What is an underwater mountain that does not reach the surface?',
+                image: '🗻',
+                options: ['Volcanic Island', 'Seamount', 'Abyssal Plain', 'Continental Rise'],
+                correct: 1
+            },
+            {
+                question: 'What are the deepest parts of the ocean floor?',
+                image: '🕳️',
+                options: ['Mid-Ocean Ridges', 'Seamounts', 'Trenches', 'Rift Valleys'],
+                correct: 2
+            },
+            {
+                question: 'What forms when an underwater volcano breaks the surface?',
+                image: '🌋',
+                options: ['Trench', 'Abyssal Plain', 'Volcanic Island', 'Continental Shelf'],
+                correct: 2
+            },
+            {
+                question: 'What percentage of Earth\'s surface do oceans cover?',
+                image: '🌍',
+                options: ['More than 50%', 'More than 70%', 'Exactly 50%', 'Less than 30%'],
+                correct: 1
+            }
+        ];
+
+        let currentQuestion = 0;
+        let quizScore = 0;
+        let answered = false;
+
+        function initQuiz() {
+            currentQuestion = 0;
+            quizScore = 0;
+            answered = false;
+
+            document.getElementById('questionCard').style.display = 'block';
+            document.getElementById('scoreDisplay').style.display = 'none';
+            document.getElementById('restartBtn').style.display = 'none';
+
+            // Shuffle questions
+            quizQuestions.sort(() => Math.random() - 0.5);
+
+            updateProgress();
+            showQuestion();
+        }
+
+        function updateProgress() {
+            const progress = document.getElementById('quizProgress');
+            progress.innerHTML = '';
+            for (let i = 0; i < 10; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot';
+                if (i === currentQuestion) dot.classList.add('active');
+                if (i < currentQuestion) {
+                    // Check if previous answers were correct
+                    dot.classList.add(quizQuestions[i].correct === quizQuestions[i].userAnswer ? 'correct' : 'wrong');
+                }
+                progress.appendChild(dot);
+            }
+        }
+
+        function showQuestion() {
+            answered = false;
+            const q = quizQuestions[currentQuestion];
+            document.getElementById('questionText').textContent = q.question;
+            document.getElementById('quizImage').textContent = q.image;
+
+            const optionsDiv = document.getElementById('quizOptions');
+            optionsDiv.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'quiz-option';
+                btn.textContent = opt;
+                btn.onclick = () => selectAnswer(idx);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(idx) {
+            if (answered) return;
+            answered = true;
+
+            const q = quizQuestions[currentQuestion];
+            q.userAnswer = idx;
+
+            const options = document.querySelectorAll('.quiz-option');
+            options[idx].classList.add(idx === q.correct ? 'correct' : 'wrong');
+            if (idx !== q.correct) {
+                options[q.correct].classList.add('correct');
+            } else {
+                quizScore++;
+            }
+
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < 10) {
+                    updateProgress();
+                    showQuestion();
+                } else {
+                    showFinalScore();
+                }
+            }, 1500);
+        }
+
+        function showFinalScore() {
+            document.getElementById('questionCard').style.display = 'none';
+            document.getElementById('scoreDisplay').style.display = 'block';
+            document.getElementById('finalScore').textContent = quizScore;
+            document.getElementById('restartBtn').style.display = 'inline-block';
+
+            if (quizScore >= 8) {
+                celebrate();
+            }
+        }
+
+        // Celebration
+        function celebrate() {
+            const celebration = document.getElementById('celebration');
+            const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
+
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    celebration.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+    
+    // Text-to-Speech functionality
+    const speechSynthesis = window.speechSynthesis;
+    let currentUtterance = null;
+
+    function speakText(text) {
+        // Cancel any ongoing speech
+        if (speechSynthesis.speaking) {
+            speechSynthesis.cancel();
+        }
+
+        // Create new utterance
+        currentUtterance = new SpeechSynthesisUtterance(text);
+        currentUtterance.rate = 0.9; // Slightly slower for clarity
+        currentUtterance.pitch = 1;
+        currentUtterance.volume = 1;
+
+        // Try to use a good English voice
+        const voices = speechSynthesis.getVoices();
+        const preferredVoice = voices.find(voice => 
+            voice.name.includes('Google US English') || 
+            voice.name.includes('Samantha') || 
+            voice.name.includes('Daniel')
+        );
+        if (preferredVoice) {
+            currentUtterance.voice = preferredVoice;
+        }
+
+        speechSynthesis.speak(currentUtterance);
+    }
+
+    // Load voices when available
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+    }
+</script>
+</body>
+</html>
